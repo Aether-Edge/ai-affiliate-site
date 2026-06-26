@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="{{ site.lang }}">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{% block title %}{{ site.title }}{% endblock %}</title>
+<meta name="description" content="{% block desc %}{{ site.description }}{% endblock %}">
+<link rel="canonical" href="{% block canonical %}{{ site.base_url }}{% endblock %}">
+<link rel="stylesheet" href="{{ site.base_url }}/style.css">
+{% if mon.adsense_client and 'XXXX' not in mon.adsense_client %}
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client={{ mon.adsense_client }}" crossorigin="anonymous"></script>
+{% if mon.adsense_auto_ads %}<script>(adsbygoogle=window.adsbygoogle||[]).push({google_ad_client:"{{ mon.adsense_client }}",enable_page_level_ads:true});</script>{% endif %}
+{% endif %}
+</head>
+<body>
+<header class="site-header">
+  <a class="logo" href="{{ site.base_url }}/">{{ site.title }}</a>
+  <p class="tagline">{{ site.description }}</p>
+</header>
+<main>{% block content %}{% endblock %}</main>
+<footer class="site-footer">
+  {% if mon.show_affiliate_disclaimer %}
+  <p class="disclaimer">※当サイトはアフィリエイトプログラム（Amazonアソシエイト等）およびGoogle AdSenseを利用しており、商品リンクから収益を得る場合があります。価格・仕様は記事公開時点の目安です。</p>
+  {% endif %}
+  <p><a href="{{ site.base_url }}/privacy.html">プライバシーポリシー</a> ・ © {{ now[:4] }} {{ site.author }}</p>
+</footer>
+</body>
+</html>
