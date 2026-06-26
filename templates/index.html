@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="intro">
+  <h1>{{ site.title }}</h1>
+  <p>{{ site.description }}</p>
+</section>
+<section class="post-list">
+  {% for p in posts %}
+  <article class="card">
+    <a href="{{ site.base_url }}/{{ p.path }}"><h2>{{ p.title }}</h2></a>
+    <p class="meta">{{ p.date }}{% for t in p.tags %} ・ #{{ t }}{% endfor %}</p>
+    <p>{{ p.description }}</p>
+    <a class="more" href="{{ site.base_url }}/{{ p.path }}">続きを読む →</a>
+  </article>
+  {% else %}
+  <p>記事はまだありません。自動生成を実行すると、ここに記事が並びます。</p>
+  {% endfor %}
+</section>
+{% endblock %}
