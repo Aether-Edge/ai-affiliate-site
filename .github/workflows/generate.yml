@@ -1,0 +1,56 @@
+name: AI記事を自動生成して公開
+
+on:
+  schedule:
+    - cron: '0 21 * * *'      # 毎日 06:00 JST（UTC21:00）。時刻は自由に変更可
+  workflow_dispatch:           # 手動実行ボタン
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  generate-and-deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: 依存をインストール
+        run: pip install -r requirements.txt
+
+      - name: AIで記事を生成
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: python scripts/generate_article.py
+
+      - name: 生成記事をコミット
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add content/ data/
+          git commit -m "auto: 記事を自動生成 $(date -u +%Y-%m-%d)" || echo "変更なし"
+          git push || echo "push不要"
+
+      - name: サイトをビルド
+        run: python scripts/build_site.py
+
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+      - id: deploy
+        uses: actions/deploy-pages@v4
